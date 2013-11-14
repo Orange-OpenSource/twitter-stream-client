@@ -1,0 +1,21 @@
+{
+  "name": "TwitterStreamClient",
+  "version": "0.1.0",
+  "description": "A daemon listening to Twitter streaming API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "gitolite@orangeforge.rd.francetelecom.fr:ots/twitterstreamclient.git"
+  },
+  "dependencies": {
+    "oauth": "0.9.x"
+  },
+  "keywords": [
+    "twitter"
+  ],
+  "author": "Maxime Lardenois <maxime.lardenois@orange.com>",
+  "license": "private"
+}
