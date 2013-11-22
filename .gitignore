@@ -2,3 +2,4 @@ user_timeline
 .env
 nbproject
 *.sublime-*
+node_modules

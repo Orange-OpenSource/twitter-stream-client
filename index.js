@@ -3,38 +3,21 @@
 
 var https = require('https'),
     OAuth = require('oauth').OAuth,
-    proxyRequest,
-    request,
-    twitterKeepaliveTimeout = null,
-    config;
+    EventEmitter = require('events').EventEmitter,
+    util = require('util');
 
+function TwitterStreamClient (options) {
+    this.config = {};
+    this.twitterKeepaliveTimeout = null;
+    this.request = null;
 
-// Close connection to Twitter Stream API
-var disconnectFromTwitter = function () {
-    clearTimeout(twitterKeepaliveTimeout);
-    if (request !== undefined) {
-        request.abort();
-    }
+    EventEmitter.call(this);
 
-    console.log('disconnected from Twitter API');
-};
-
-var twitterDownAlert = function () {
-    console.error("Twitter seems to be down");
-    config.callbacks.onTwitterDown && config.callbacks.onTwitterDown.apply();
-};
-
-var restartTwitterKeepAlive = function () {
-    clearTimeout(twitterKeepaliveTimeout);
-    twitterKeepaliveTimeout = setTimeout(twitterDownAlert, config.twitter.keepAliveTime);
-};
-
-function checkAndSaveOptions (options) {
-    if(undefined !== options && undefined !== options.twitter && undefined !== options.twitter.OAuth 
-        && options.twitter.OAuth.consumerKey !== null && options.twitter.OAuth.consumerSecret !== null
-        && options.twitter.keywords !== null &&  options.callbacks.newTweet !== undefined
-        && options.twitter.accessToken !== null && options.twitter.accessTokenSecret !== null) {        
-        config = {
+    if(undefined !== options && undefined !== options.twitter && undefined !== options.twitter.OAuth && 
+        options.twitter.OAuth.consumerKey !== null && options.twitter.OAuth.consumerSecret !== null && 
+        options.twitter.keywords !== null &&  options.callbacks.newTweet !== undefined &&
+        options.twitter.accessToken !== null && options.twitter.accessTokenSecret !== null) {        
+        this.config = {
             twitter: {
                 OAuth: {
                     tokenRequestUrl: options.twitter.OAuth.tokenRequestUrl || "https://twitter.com/oauth/request_token",
@@ -57,27 +40,48 @@ function checkAndSaveOptions (options) {
             callbacks: options.callbacks,
         };
     } else {
-        console.log(config);
+        console.log(this.config);
         throw "Twitter Stream Client config elements missing";
     }
+}
+util.inherits(TwitterStreamClient, EventEmitter);
+
+// Close connection to Twitter Stream API
+TwitterStreamClient.prototype.disconnect = function () {
+    clearTimeout(this.twitterKeepaliveTimeout);
+    if (this.request !== undefined) {
+        this.request.abort();
+    }
+
+    console.log('disconnected from Twitter API');
 };
 
-var openTwitterSocket = function (socket) {
+TwitterStreamClient.prototype.twitterDownAlert = function () {
+    console.error("Twitter seems to be down");
+    this.emit('twitterdown');
+};
+
+TwitterStreamClient.prototype.restartTwitterKeepAlive = function () {
+    clearTimeout(this.twitterKeepaliveTimeout);
+    this.twitterKeepaliveTimeout = setTimeout(this.twitterDownAlert.bind(this), this.config.twitter.keepAliveTime);
+};
+
+TwitterStreamClient.prototype.openTwitterSocket = function (socket) {
     var oauth = new OAuth(
-            config.twitter.OAuth.tokenRequestUrl,
-            config.twitter.OAuth.tokenAccessUrl,
-            config.twitter.OAuth.consumerKey,
-            config.twitter.OAuth.consumerSecret,
-            config.twitter.OAuth.version,
-            config.twitter.OAuth.authorizeCallback,
-            config.twitter.OAuth.signatureMethod
+            this.config.twitter.OAuth.tokenRequestUrl,
+            this.config.twitter.OAuth.tokenAccessUrl,
+            this.config.twitter.OAuth.consumerKey,
+            this.config.twitter.OAuth.consumerSecret,
+            this.config.twitter.OAuth.version,
+            this.config.twitter.OAuth.authorizeCallback,
+            this.config.twitter.OAuth.signatureMethod
         ),
-        requestPath = config.twitter.trackRequest + '=' + encodeURIComponent(config.twitter.keywords),
-        url = 'https://' + config.twitter.host + ':' + config.twitter.port + requestPath,
+        requestPath = this.config.twitter.trackRequest + '=' + encodeURIComponent(this.config.twitter.keywords),
+        url = 'https://' + this.config.twitter.host + ':' + this.config.twitter.port + requestPath,
         options = {
             path: requestPath,
-            host: config.twitter.host,
-            headers: {'Authorization': oauth.authHeader(url, config.twitter.accessToken, config.twitter.accessTokenSecret, "GET")},
+            host: this.config.twitter.host,
+            headers: {'Authorization': oauth.authHeader(url, this.config.twitter.accessToken, this.config.twitter.accessTokenSecret, "GET")},
             agent: false
         };
 
@@ -86,17 +90,17 @@ var openTwitterSocket = function (socket) {
         options.socket = socket;
     }
 
-    request = https.get(options, function (response) {
+    this.request = https.get(options, function (response) {
         var data = "",
             tweetSeparator = '\r\n',
             index,
             tweet;
         console.log('Connected to Twitter streaming API');
-        config.callbacks.onTwitterConnection && config.callbacks.onTwitterConnection.apply();
-        restartTwitterKeepAlive();
+        this.emit('connected');
+        this.restartTwitterKeepAlive();
 
         response.on('data', function (chunk) {
-            restartTwitterKeepAlive();
+            this.restartTwitterKeepAlive();
             data += chunk.toString('utf8');
 
             do {
@@ -109,38 +113,38 @@ var openTwitterSocket = function (socket) {
                         tweet = JSON.parse(tweet);
 
                         if (tweet !== undefined && tweet.user !== undefined && tweet.text !== undefined) {
-                            config.callbacks.newTweet.apply(null, [tweet]);
+                            this.emit('newtweet', tweet);
                         }
                     } catch (error) {
                         console.log(error.message);
                     }
                 }
             } while (index > -1);
-        });
-    });
+        }.bind(this));
+    }.bind(this));
 
-    request.on('error', function (error) {
+    this.request.on('error', function (error) {
         console.log(error.message);
-        config.callbacks.onTwitterError && config.callbacks.onTwitterDown.apply();
+        this.emit('twittererror', error);
         throw "error while connecting to Twitter API: " + error.code;
-    });
+    }.bind(this));
 
-    request.end();
+    this.request.end();
 };
 
 // Listen to hashtags through the twitter streaming API
-function connect (options) {
-    checkAndSaveOptions(options);
-    if (!config.proxy) {
+TwitterStreamClient.prototype.connect = function () {
+    if (!this.config.proxy) {
         console.log("connect to Twitter Stream API no proxy");
-        openTwitterSocket();
+        this.openTwitterSocket();
     } else {
+        var proxyRequest = null;
         console.log("connect to Twitter Stream API through proxy");
         proxyRequest = require('http').request({
-            host: config.proxy.host,
-            port: config.proxy.port,
+            host: this.config.proxy.host,
+            port: this.config.proxy.port,
             method: 'CONNECT',
-            path: config.twitter.host + ':' + config.twitter.port
+            path: this.config.twitter.host + ':' + this.config.twitter.port
         });
 
         proxyRequest.on('error', function (e) {
@@ -148,12 +152,9 @@ function connect (options) {
         });
 
         proxyRequest.on('connect', function (response, proxySocket) {
-            openTwitterSocket(proxySocket);
-        }).end();
+            this.openTwitterSocket(proxySocket);
+        }.bind(this)).end();
     }
 };
 
-module.exports = {
-    connect: connect,
-    disconnect: disconnectFromTwitter
-};
+module.exports = TwitterStreamClient;
