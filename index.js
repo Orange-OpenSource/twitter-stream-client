@@ -15,8 +15,8 @@ function TwitterStreamClient (options) {
 
     if(undefined !== options && undefined !== options.twitter && undefined !== options.twitter.OAuth && 
         options.twitter.OAuth.consumerKey !== null && options.twitter.OAuth.consumerSecret !== null && 
-        options.twitter.keywords !== null &&  options.callbacks.newTweet !== undefined &&
-        options.twitter.accessToken !== null && options.twitter.accessTokenSecret !== null) {        
+        options.twitter.keywords !== null && options.twitter.accessToken !== null && 
+        options.twitter.accessTokenSecret !== null) {        
         this.config = {
             twitter: {
                 OAuth: {
@@ -36,8 +36,7 @@ function TwitterStreamClient (options) {
                 accessToken: options.twitter.accessToken,
                 accessTokenSecret: options.twitter.accessTokenSecret
             },
-            proxy: options.proxy || false,
-            callbacks: options.callbacks,
+            proxy: options.proxy || false
         };
     } else {
         console.log(this.config);
