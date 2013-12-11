@@ -28,7 +28,7 @@ function TwitterStreamClient (options) {
                     authorizeCallback: options.twitter.OAuth.authorizeCallback || null,
                     signatureMethod: options.twitter.OAuth.signatureMethod || "HMAC-SHA1"
                 },
-                keepAliveTime: options.twitter.keepAliveTime || 32000,
+                keepAliveTime: options.twitter.keepAliveTime || 64000,
                 trackRequest: options.twitter.trackRequest || "/1.1/statuses/filter.json?stall_warnings=true&track",
                 keywords: options.twitter.keywords,
                 host: options.twitter.host || "stream.twitter.com",
