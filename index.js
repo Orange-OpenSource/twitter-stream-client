@@ -1,46 +1,46 @@
 /*jslint node: true */
-"use strict";
+'use strict';
 
 var https = require('https'),
     OAuth = require('oauth').OAuth,
     EventEmitter = require('events').EventEmitter,
     util = require('util');
 
-function TwitterStreamClient (options) {
+function TwitterStreamClient (options, proxy) {
     this.config = {};
     this.twitterKeepaliveTimeout = null;
     this.request = null;
 
     EventEmitter.call(this);
 
-    if(undefined !== options && undefined !== options.twitter && undefined !== options.twitter.OAuth && 
-        options.twitter.OAuth.consumerKey !== null && options.twitter.OAuth.consumerSecret !== null && 
-        options.twitter.keywords !== null && options.twitter.accessToken !== null && 
-        options.twitter.accessTokenSecret !== null) {        
+    if(undefined !== options && undefined !== options.OAuth && 
+        options.OAuth.consumerKey !== null && options.OAuth.consumerSecret !== null && 
+        options.keywords !== null && options.accessToken !== null && 
+        options.accessTokenSecret !== null) {        
         this.config = {
             twitter: {
                 OAuth: {
-                    tokenRequestUrl: options.twitter.OAuth.tokenRequestUrl || "https://twitter.com/oauth/request_token",
-                    tokenAccessUrl: options.twitter.OAuth.tokenAccessUrl || "https://twitter.com/oauth/access_token",
-                    consumerKey: options.twitter.OAuth.consumerKey || null,
-                    consumerSecret: options.twitter.OAuth.consumerSecret || null,
-                    version: options.twitter.OAuth.version || "1.0A",
-                    authorizeCallback: options.twitter.OAuth.authorizeCallback || null,
-                    signatureMethod: options.twitter.OAuth.signatureMethod || "HMAC-SHA1"
+                    tokenRequestUrl: options.OAuth.tokenRequestUrl || 'https://twitter.com/oauth/request_token',
+                    tokenAccessUrl: options.OAuth.tokenAccessUrl || 'https://twitter.com/oauth/access_token',
+                    consumerKey: options.OAuth.consumerKey || null,
+                    consumerSecret: options.OAuth.consumerSecret || null,
+                    version: options.OAuth.version || '1.0A',
+                    authorizeCallback: options.OAuth.authorizeCallback || null,
+                    signatureMethod: options.OAuth.signatureMethod || 'HMAC-SHA1'
                 },
-                keepAliveTime: options.twitter.keepAliveTime || 64000,
-                trackRequest: options.twitter.trackRequest || "/1.1/statuses/filter.json?stall_warnings=true&track",
-                keywords: options.twitter.keywords,
-                host: options.twitter.host || "stream.twitter.com",
-                port: options.twitter.port || "443",
-                accessToken: options.twitter.accessToken,
-                accessTokenSecret: options.twitter.accessTokenSecret
+                keepAliveTime: options.keepAliveTime || 64000,
+                trackRequest: options.trackRequest || '/1.1/statuses/filter.json?stall_warnings=true&track',
+                keywords: options.keywords,
+                host: options.host || 'stream.twitter.com',
+                port: options.port || '443',
+                accessToken: options.accessToken,
+                accessTokenSecret: options.accessTokenSecret
             },
-            proxy: options.proxy || false
+            proxy: proxy || false
         };
     } else {
         console.log(this.config);
-        throw "Twitter Stream Client config elements missing";
+        throw 'Twitter Stream Client config elements missing';
     }
 }
 util.inherits(TwitterStreamClient, EventEmitter);
@@ -56,7 +56,7 @@ TwitterStreamClient.prototype.disconnect = function () {
 };
 
 TwitterStreamClient.prototype.twitterDownAlert = function () {
-    console.error("Twitter seems to be down");
+    console.error('Twitter seems to be down');
     this.emit('twitterdown');
 };
 
@@ -80,7 +80,9 @@ TwitterStreamClient.prototype.openTwitterSocket = function (socket) {
         options = {
             path: requestPath,
             host: this.config.twitter.host,
-            headers: {'Authorization': oauth.authHeader(url, this.config.twitter.accessToken, this.config.twitter.accessTokenSecret, "GET")},
+            headers: {
+                'Authorization': oauth.authHeader(url, this.config.twitter.accessToken, this.config.twitter.accessTokenSecret, 'GET')
+            },
             agent: false
         };
 
@@ -90,7 +92,7 @@ TwitterStreamClient.prototype.openTwitterSocket = function (socket) {
     }
 
     this.request = https.get(options, function (response) {
-        var data = "",
+        var data = '',
             tweetSeparator = '\r\n',
             index,
             tweet;
@@ -125,20 +127,19 @@ TwitterStreamClient.prototype.openTwitterSocket = function (socket) {
     this.request.on('error', function (error) {
         console.log(error.message);
         this.emit('twittererror', error);
-        throw "error while connecting to Twitter API: " + error.code;
+        throw 'error while connecting to Twitter API: ' + error.code;
     }.bind(this));
 
     this.request.end();
 };
 
-// Listen to hashtags through the twitter streaming API
 TwitterStreamClient.prototype.connect = function () {
     if (!this.config.proxy) {
-        console.log("connect to Twitter Stream API no proxy");
+        console.log('connect to Twitter Stream API no proxy');
         this.openTwitterSocket();
     } else {
         var proxyRequest = null;
-        console.log("connect to Twitter Stream API through proxy");
+        console.log('connect to Twitter Stream API through proxy');
         proxyRequest = require('http').request({
             host: this.config.proxy.host,
             port: this.config.proxy.port,
@@ -147,7 +148,7 @@ TwitterStreamClient.prototype.connect = function () {
         });
 
         proxyRequest.on('error', function (e) {
-            throw "Can't connect to proxy : " + e.code;
+            throw 'Can not connect to proxy : ' + e.code;
         });
 
         proxyRequest.on('connect', function (response, proxySocket) {
