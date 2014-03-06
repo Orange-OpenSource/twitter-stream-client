@@ -58,6 +58,8 @@ TwitterStreamClient.prototype.disconnect = function () {
 TwitterStreamClient.prototype.twitterDownAlert = function () {
     console.error('Twitter seems to be down');
     this.emit('twitterdown');
+    this.disconnect();
+    this.connect();
 };
 
 TwitterStreamClient.prototype.restartTwitterKeepAlive = function () {
