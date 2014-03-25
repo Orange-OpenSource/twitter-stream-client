@@ -1,22 +1,24 @@
 {
-  "name": "orange-twitterstreamclient",
-  "version": "0.6.1",
-  "description": "A daemon listening to Twitter streaming API",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "gitolite@orangeforge.rd.francetelecom.fr:ots/twitterstreamclient.git"
-  },
-  "dependencies": {
-    "oauth": "0.9.x"
-  },
-  "keywords": [
-    "twitter"
-  ],
-  "author": "Maxime Lardenois <maxime.lardenois@orange.com>",
-  "license": "private",
-  "publishConfig": { "registry": "http://10.194.224.187:4873/" }
+    "name": "orange-twitterstreamclient",
+    "version": "0.7.0",
+    "description": "A daemon listening to Twitter streaming API",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "gitolite@orangeforge.rd.francetelecom.fr:ots/twitterstreamclient.git"
+    },
+    "dependencies": {
+        "oauth": "0.9.x"
+    },
+    "keywords": [
+        "twitter"
+    ],
+    "author": "Maxime Lardenois <maxime.lardenois@orange.com>",
+    "license": "private",
+    "publishConfig": {
+        "registry": "http://10.194.224.187:4873/"
+    }
 }
