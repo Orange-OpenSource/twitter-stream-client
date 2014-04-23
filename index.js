@@ -95,7 +95,7 @@ TwitterStreamClient.prototype.openTwitterSocket = function(socket) {
     }
 
     this.request = https.get(options, function(response) {
-        var data = '',
+        var buffer = '',
             tweetSeparator = '\r\n',
             index,
             tweet;
@@ -105,12 +105,11 @@ TwitterStreamClient.prototype.openTwitterSocket = function(socket) {
 
         response.on('data', function(chunk) {
             this.restartTwitterKeepAlive();
-            data += chunk.toString('utf8');
+            buffer += chunk.toString('utf8');
+            index = buffer.indexOf(tweetSeparator);
 
-            do {
-                index = data.indexOf(tweetSeparator);
-                tweet = data.slice(0, index);
-                data = data.slice(index + tweetSeparator.length);
+            while (index > -1) {
+                tweet = buffer.slice(0, index);
 
                 if (tweet.length > 0) {
                     try {
@@ -126,7 +125,10 @@ TwitterStreamClient.prototype.openTwitterSocket = function(socket) {
                         console.log(error.message);
                     }
                 }
-            } while (index > -1);
+
+                buffer = buffer.slice(index + tweetSeparator.length);
+                index = buffer.indexOf(tweetSeparator);
+            }
         }.bind(this));
     }.bind(this));
 
