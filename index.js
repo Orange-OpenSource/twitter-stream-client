@@ -70,14 +70,14 @@ TwitterStreamClient.prototype.restartTwitterKeepAlive = function() {
 
 TwitterStreamClient.prototype.openTwitterSocket = function(socket) {
     var oauth = new OAuth(
-        this.config.twitter.OAuth.tokenRequestUrl,
-        this.config.twitter.OAuth.tokenAccessUrl,
-        this.config.twitter.OAuth.consumerKey,
-        this.config.twitter.OAuth.consumerSecret,
-        this.config.twitter.OAuth.version,
-        this.config.twitter.OAuth.authorizeCallback,
-        this.config.twitter.OAuth.signatureMethod
-    ),
+            this.config.twitter.OAuth.tokenRequestUrl,
+            this.config.twitter.OAuth.tokenAccessUrl,
+            this.config.twitter.OAuth.consumerKey,
+            this.config.twitter.OAuth.consumerSecret,
+            this.config.twitter.OAuth.version,
+            this.config.twitter.OAuth.authorizeCallback,
+            this.config.twitter.OAuth.signatureMethod
+        ),
         requestPath = this.config.twitter.trackRequest + '=' + encodeURIComponent(this.config.twitter.keywords),
         url = 'https://' + this.config.twitter.host + ':' + this.config.twitter.port + requestPath,
         options = {
@@ -156,7 +156,7 @@ TwitterStreamClient.prototype.connect = function() {
         });
 
         proxyRequest.on('error', function(e) {
-            throw 'Can not connect to proxy : ' + e.code;
+            throw 'Cannot connect to proxy : ' + e.code;
         });
 
         proxyRequest.on('connect', function(response, proxySocket) {
