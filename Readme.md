@@ -35,7 +35,7 @@ TwitterStreamClient is an [EventEmitter](http://nodejs.org/api/events.html) and 
 * __twitterdown__: when we did not get the keep alive tick from Twitter for longer than keepAliveTime (see API#constructor)
 * __newtweet__: when we have a new tweet from Twitter, the parsed tweet is passed as a parameter to the callback
 * __missedtweets__: when twitter sends a "limit" error, we emit this event with the number of missed tweets on this particular time (not the total)
-* __twittererror__: when the connection request gets an error code as a response
+* __error__: when the connection request gets an error code as a response or Twitter sends a string that is not JSON
 
 ## API
 

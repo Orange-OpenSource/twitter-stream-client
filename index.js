@@ -99,46 +99,56 @@ TwitterStreamClient.prototype.openTwitterSocket = function(socket) {
             tweetSeparator = '\r\n',
             index,
             tweet;
-        console.log('Connected to Twitter streaming API');
-        this.emit('connected');
-        this.restartTwitterKeepAlive();
 
-        response.on('data', function(chunk) {
+        if (response.statusCode === 200) {
+            console.log('Connected to Twitter streaming API');
+            this.emit('connected');
             this.restartTwitterKeepAlive();
-            buffer += chunk.toString('utf8');
-            index = buffer.indexOf(tweetSeparator);
 
-            while (index > -1) {
-                tweet = buffer.slice(0, index);
-
-                if (tweet.length > 0) {
-                    try {
-                        tweet = JSON.parse(tweet);
-
-                        if (tweet !== undefined && tweet.user !== undefined && tweet.text !== undefined) {
-                            this.emit('newtweet', tweet);
-                        } else {
-                            this.emit('missedtweets', tweet.limit.track - this.missedTweetsTotal);
-                            this.missedTweetsTotal = tweet.limit.track;
-                        }
-                    } catch (error) {
-                        console.log(error.message);
-                    }
-                }
-
-                buffer = buffer.slice(index + tweetSeparator.length);
+            response.on('data', function(chunk) {
+                this.restartTwitterKeepAlive();
+                buffer += chunk.toString('utf8');
                 index = buffer.indexOf(tweetSeparator);
-            }
-        }.bind(this));
+
+                while (index > -1) {
+                    tweet = buffer.slice(0, index);
+
+                    if (tweet.length > 0) {
+                        try {
+                            tweet = JSON.parse(tweet);
+
+                            if (tweet !== undefined && tweet.user !== undefined && tweet.text !== undefined) {
+                                this.emit('newtweet', tweet);
+                            } else {
+                                this.emit('missedtweets', tweet.limit.track - this.missedTweetsTotal);
+                                this.missedTweetsTotal = tweet.limit.track;
+                            }
+                        } catch (error) {
+                            this.connectionError('unexpected data from Twitter, buffer is: ' + buffer);
+                        }
+                    }
+
+                    buffer = buffer.slice(index + tweetSeparator.length);
+                    index = buffer.indexOf(tweetSeparator);
+                }
+            }.bind(this));
+
+        } else {
+            this.connectionError(response.statusCode);
+        }
+
     }.bind(this));
 
     this.request.on('error', function(error) {
-        console.log(error.message);
-        this.emit('twittererror', error);
-        throw 'error while connecting to Twitter API: ' + error.code;
+        this.connectionError('error while connecting to Twitter API: ' + error.code);
     }.bind(this));
 
     this.request.end();
+};
+
+TwitterStreamClient.prototype.connectionError = function(message) {
+    console.log(message);
+    this.emit('error', message);
 };
 
 TwitterStreamClient.prototype.connect = function() {
