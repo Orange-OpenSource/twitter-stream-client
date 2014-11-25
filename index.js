@@ -124,7 +124,8 @@ TwitterStreamClient.prototype.openTwitterSocket = function(socket) {
                                 this.missedTweetsTotal = tweet.limit.track;
                             }
                         } catch (error) {
-                            this.connectionError('unexpected data from Twitter, buffer is: ' + buffer);
+                            console.log(error)
+                            this.connectionError(' unexpected data from Twitter, buffer is: ' + buffer);
                         }
                     }
 
@@ -140,14 +141,14 @@ TwitterStreamClient.prototype.openTwitterSocket = function(socket) {
     }.bind(this));
 
     this.request.on('error', function(error) {
-        this.connectionError('error while connecting to Twitter API: ' + error.code);
+        this.connectionError(error.code);
     }.bind(this));
 
     this.request.end();
 };
 
 TwitterStreamClient.prototype.connectionError = function(message) {
-    console.log(message);
+    console.log('Twitter connection error: ' + message);
     this.emit('error', message);
 };
 
