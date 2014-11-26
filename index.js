@@ -39,6 +39,9 @@ function TwitterStreamClient(options, proxy) {
             },
             proxy: proxy ||  false
         };
+        if (options.languagesFilter) {
+            this.config.twitter.trackRequest += '&languages=' + options.languagesFilter;
+        }
     } else {
         console.log(this.config);
         throw 'Twitter Stream Client config elements missing';

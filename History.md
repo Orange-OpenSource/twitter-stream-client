@@ -1,3 +1,7 @@
+0.9.0 / 2014-11-26
+==================
+* added languagesFilter in options
+
 0.8.1 / 2014-11-25
 ==================
 * added text on connection error by status

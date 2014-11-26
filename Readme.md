@@ -54,7 +54,8 @@ TwitterClient is the constructor and has two arguments:
 * __`keepAliveTime`__ (integer),  default 64000, if Twitter does not send a keep alive tick after this duration, we consider the connection is lost and send `twitterdown` event and restart the client 
 * __`trackRequest`__ (string), default `'/1.1/statuses/filter.json?stall_warnings=true&track'`, can be used to change the streaming API we use 
 * __`host`__ (string), default `'stream.twitter.com'`,
-* __`port`__ (string), default `'443'`
+* __`port`__ (string), default `'443'`,
+* __`languagesFilter`__ (string), comma separated list of languages (Twitter codes) to add as filter to the request default `''`
 
 If set `proxy` is a hash which must contain:
 
