@@ -9,6 +9,8 @@ var https = require('https'),
 function TwitterStreamClient(options, proxy) {
     this.config = {};
     this.twitterKeepaliveTimeout = null;
+    this.retryConnectionTimeout = null;
+    this.retryConnectionDelay = 60000;
     this.request = null;
     this.missedTweetsTotal = 0;
 
@@ -104,6 +106,7 @@ TwitterStreamClient.prototype.openTwitterSocket = function(socket) {
             tweet;
 
         if (response.statusCode === 200) {
+            clearTimeout(this.retryConnectionTimeout);
             console.log('Connected to Twitter streaming API');
             this.emit('connected');
             this.restartTwitterKeepAlive();
@@ -153,6 +156,14 @@ TwitterStreamClient.prototype.openTwitterSocket = function(socket) {
 TwitterStreamClient.prototype.connectionError = function(message) {
     console.log('Twitter connection error: ' + message);
     this.emit('error', message);
+
+    this.retryConnectionDelay = this.retryConnectionDelay * 2;
+    console.log('Will try to reconnect in ' + this.retryConnectionDelay / 1000 + 's')
+    clearTimeout(this.retryConnectionTimeout);
+    this.retryConnectionTimeout = setTimeout(function() {
+        this.disconnect();
+        this.connect();
+    }.bind(this), this.retryConnectionDelay);
 };
 
 TwitterStreamClient.prototype.connect = function() {

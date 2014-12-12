@@ -1,3 +1,7 @@
+0.10.0 / 2014-12-12
+==================
+* auto-reconnect on all errors (growing delay)
+
 0.9.0 / 2014-11-26
 ==================
 * added languagesFilter in options
