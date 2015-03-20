@@ -1,6 +1,6 @@
 {
     "name": "orange-twitterstreamclient",
-    "version": "0.10.0",
+    "version": "0.10.1",
     "description": "A daemon listening to Twitter streaming API",
     "main": "index.js",
     "scripts": {
@@ -19,6 +19,6 @@
     "author": "Maxime Lardenois <maxime.lardenois@orange.com>",
     "license": "private",
     "publishConfig": {
-        "registry": "http://10.194.224.187:4873/"
+        "registry": "http://10.192.36.79:8081/artifactory/api/npm/npm-local-orange"
     }
 }
