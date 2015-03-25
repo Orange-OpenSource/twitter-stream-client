@@ -1,3 +1,7 @@
+0.11.0 / 2015-03-25
+==================
+* prepare publishing
+
 0.10.0 / 2014-12-12
 ==================
 * auto-reconnect on all errors (growing delay)

@@ -5,13 +5,13 @@ TwitterStreamClient is a client for the Twitter Streaming API
 To install TwitterStreamClient, run: 
 
 ```
-npm install orange-twitterstreamclient --registry http://10.194.224.187:4873/
+npm install twitter-stream-client
 ```
 
 A simple Twitter Stream client would be:
 
 ```javascript
-var TwitterClient = require('orange-twitterstreamclient');
+var TwitterClient = require('twitter-stream-client');
 var twitterClient = new TwitterClient ({
         OAuth: {
             consumerKey: 'TWITTER CONSUMER KEY',
@@ -69,4 +69,4 @@ Actually connects to Twitter API, if you save the tweets in the listener of `new
 Disconnect from Twitter API
 
 ## Licence
-???
+MIT

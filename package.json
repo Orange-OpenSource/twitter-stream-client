@@ -1,24 +1,22 @@
 {
-    "name": "orange-twitterstreamclient",
-    "version": "0.10.1",
+    "name": "twitter-stream-client",
+    "version": "0.11.0",
     "description": "A daemon listening to Twitter streaming API",
+    "author": "Maxime Lardenois <maxime.lardenois@orange.com>",
     "main": "index.js",
+    "engines": {
+        "node": ">= 0.10.0"
+    },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 0"
-    },
-    "repository": {
-        "type": "git",
-        "url": "gitolite@orangeforge.rd.francetelecom.fr:ots/twitterstreamclient.git"
     },
     "dependencies": {
         "oauth": "0.9.x"
     },
     "keywords": [
-        "twitter"
+        "twitter",
+        "streaming api"
     ],
-    "author": "Maxime Lardenois <maxime.lardenois@orange.com>",
-    "license": "private",
-    "publishConfig": {
-        "registry": "http://10.192.36.79:8081/artifactory/api/npm/npm-local-orange"
-    }
+    "license": "MIT",
+    "repository": "Orange-OpenSource/twitter-stream-client"
 }
