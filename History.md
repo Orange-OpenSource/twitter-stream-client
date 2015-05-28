@@ -1,3 +1,7 @@
+0.11.1 / 2015-05-28
+==================
+* use connectionError when we can not connect to proxy (emits error)
+
 0.11.0 / 2015-03-25
 ==================
 * prepare publishing
