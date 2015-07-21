@@ -182,7 +182,7 @@ TwitterStreamClient.prototype.connect = function() {
 
         proxyRequest.on('error', function(e) {
             this.connectionError('Cannot connect to proxy : ' + e.code);
-        });
+        }.bind(this));
 
         proxyRequest.on('connect', function(response, proxySocket) {
             this.openTwitterSocket(proxySocket);

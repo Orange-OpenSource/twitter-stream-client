@@ -1,3 +1,7 @@
+0.11.2 / 2015-07-21
+==================
+* fix error in callback after proxy request failure
+
 0.11.1 / 2015-05-28
 ==================
 * use connectionError when we can not connect to proxy (emits error)
