@@ -54,7 +54,7 @@ util.inherits(TwitterStreamClient, EventEmitter);
 // Close connection to Twitter Stream API
 TwitterStreamClient.prototype.disconnect = function() {
     clearTimeout(this.twitterKeepaliveTimeout);
-    if (this.request !== undefined) {
+    if (this.request) {
         this.request.abort();
     }
 

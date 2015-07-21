@@ -1,3 +1,7 @@
+0.11.3 / 2015-07-21
+==================
+* fix following error after previous fix
+
 0.11.2 / 2015-07-21
 ==================
 * fix error in callback after proxy request failure
